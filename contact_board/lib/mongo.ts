@@ -1,24 +1,51 @@
 import { MongoClient } from "mongodb";
+import dotenv from "dotenv";
 
-if (!process.env.MONGO_URI) throw new Error("MONGO_URI not defined");
+dotenv.config();
+
+if (!process.env.MONGO_URI) throw new Error("❌ MONGO_URI not defined");
 
 const uri = process.env.MONGO_URI;
+
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
+// Track connection state
+let isConnected = false;
+
 declare global {
-	var _mongoClientPromise: Promise<MongoClient>;
+	var _mongoClientPromise: Promise<MongoClient> | undefined;
+	var _mongoConnected: boolean | undefined;
+}
+
+async function connectClient() {
+	try {
+		const client = new MongoClient(uri);
+		await client.connect();
+
+		console.log("✅ MongoDB Connected");
+		global._mongoConnected = true;
+
+		return client;
+	} catch (err) {
+		console.error("❌ MongoDB Connection Failed:", err);
+		global._mongoConnected = false;
+		throw err;
+	}
 }
 
 if (process.env.NODE_ENV === "development") {
 	if (!global._mongoClientPromise) {
-		client = new MongoClient(uri);
-		global._mongoClientPromise = client.connect();
+		global._mongoClientPromise = connectClient();
 	}
 	clientPromise = global._mongoClientPromise;
 } else {
-	client = new MongoClient(uri);
-	clientPromise = client.connect();
+	clientPromise = connectClient();
+}
+
+// Helper to check connection state in API routes
+export function isDbConnected() {
+	return global._mongoConnected === true;
 }
 
 export default clientPromise;

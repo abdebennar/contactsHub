@@ -47,7 +47,11 @@ export default function RootLayout({
 							<UserButton />
 						</SignedIn>
 					</header>
-					{children}
+					<div className="flex min-h-screen w-full overflow-hidden items-center justify-center">
+						<div className="w-full max-w-4xl px-8">
+							{children}
+						</div>
+					</div>
 				</body>
 			</html>
 		</ClerkProvider>
