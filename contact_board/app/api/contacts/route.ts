@@ -4,20 +4,16 @@ import { NextResponse } from "next/server";
 export async function GET() {
 	try {
 		const client = await clientPromise;
-		const db = client.db(); // default DB from your URI
+		const db = client.db(); // default DB from your URI		
 
-		console.log("DB Name:", db.databaseName);
-
-		const contacts = await db.listCollections().toArray();
-
+		
+		const contacts = await db
+		.collection("contacts_contact_rows")
+		.find({})
+		.limit(10)
+		.toArray();
+		
 		console.log(contacts);
-
-		// const contacts = await db
-		// 	.collection("contacts_contact_rows")
-		// 	.find({})
-		// 	.limit(10)
-		// 	.toArray();
-
 
 		return NextResponse.json({ success: true, data: contacts });
 	} catch (error: any) {
