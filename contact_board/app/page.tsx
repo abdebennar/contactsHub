@@ -1,39 +1,50 @@
-"use client"
+import { Building2 } from "lucide-react";
+import { AgencyTable } from "@/components/AgencyTable";
+import { SearchInput } from "@/components/SearchInput";
+import { PaginationControls } from "@/components/PaginationControls";
+import { SelectStateFilter } from "./select-state-filter";
+import { SkeletonTable } from "@/components/SkeletonTable";
+import { mockApiClient } from "@/lib/mockApi";
 
-import { ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { redirect } from 'next/navigation';
+export default async function AgenciesPage({ searchParams }: { searchParams: any }) {
+  const page = parseInt(searchParams.page || "1");
+  const search = searchParams.search || "";
+  const state = searchParams.state || "all";
 
-const Dashboard = () => {
-	const dailyLimit = 50;
+  const data = await mockApiClient.getAgencies({
+    page,
+    limit: 20,
+    search,
+    state: state === "all" ? undefined : state,
+  });
 
-	return (
-		<div className="space-y-6">
-			{/* Quick Access */}
-			<div className="grid gap-6 lg:grid-cols-2">
-				<Card className="p-6 shadow-soft">
-					<h3 className="text-lg font-display font-semibold mb-2">Agencies</h3>
-					<p className="text-sm text-muted-foreground mb-4">
-						View and manage all educational agencies in the database
-					</p>
-					<Button onClick={() => redirect("/agencies")} className="w-full">
-						View All Agencies <ArrowRight className="ml-2 h-4 w-4" />
-					</Button>
-				</Card>
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold flex items-center gap-2">
+          <Building2 className="h-8 w-8" />
+          Agencies
+        </h1>
+        <p className="text-muted-foreground mt-1">Browse government agencies and their contacts</p>
+      </div>
 
-				<Card className="p-6 shadow-soft">
-					<h3 className="text-lg font-display font-semibold mb-2">Contacts</h3>
-					<p className="text-sm text-muted-foreground mb-4">
-						Review contact information (daily limit: {dailyLimit} views)
-					</p>
-					<Button onClick={() => redirect("/contacts")} className="w-full">
-						View All Contacts <ArrowRight className="ml-2 h-4 w-4" />
-					</Button>
-				</Card>
-			</div>
-		</div>
-	);
-};
+      {/* Search + State Filter */}
+      <div className="flex flex-col sm:flex-row gap-4">
+        <SearchInput defaultValue={search} />
+        <SelectStateFilter defaultValue={state} />
+      </div>
 
-export default Dashboard;
+      {/* Table */}
+      {!data ? (
+        <SkeletonTable columns={5} />
+      ) : (
+        <>
+          <AgencyTable agencies={data.data} />
+          <div className="flex justify-center">
+            <PaginationControls currentPage={page} totalPages={data.totalPages} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+}

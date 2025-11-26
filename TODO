@@ -1,0 +1,19 @@
+complet the api routs so they flexible to fetch data using limits and offsets 
+complet the dashboard -> the one in lovable looks promising 
+protect the routs from unuthenticated users 
+ 
+
+Your dashboard should include the following functionality:
+
+Users must authenticate to access the dashboard
+Authenticated users can view all agencies in the database.
+Users are limited to viewing 50 contacts per day
+When the daily limit is exceeded, users should see a prompt to upgrade (no payment integration needed)
+Both agencies and contacts can be viewed in a form of table in separate pages.
+Technical Requirements:
+
+Framework: Next.js 16
+Authentication: Clerk
+Deployment: Vercel or whatever prefered platform.
+Code repository: GitHub
+Documentation: Include a system design flowchart or "Diagram"
