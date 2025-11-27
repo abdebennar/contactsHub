@@ -1,23 +1,35 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
-
-const isProtectedRoute = createRouteMatcher([
-	'/',
+const isPublicRoute = createRouteMatcher([
+	"/sign-in(.*)",
+	"/sign-up(.*)",
+	"/sso-callback(.*)",
+	"/api/webhooks(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-	if (isProtectedRoute(req)) {
-		await auth.protect();
+	const { userId, redirectToSignIn } = await auth();
+	const path = req.nextUrl.pathname;
+
+	// --- ROOT ROUTE ---
+	if (path === "/") {
+		if (!userId) {
+			return redirectToSignIn({ returnBackUrl: req.url });
+		}
+		return Response.redirect(new URL("/agencies", req.url));
 	}
+
+	// --- PROTECTED ROUTES ---
+	if (!isPublicRoute(req) && !userId) {
+		return redirectToSignIn({ returnBackUrl: req.url });
+	}
+
+	return;
 });
 
 export const config = {
 	matcher: [
-		// Skip Next.js internals and all static files, unless found in search params
-		'/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-		// Always run for API routes
-		'/(api|trpc)(.*)',
+		"/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+		"/(api|trpc)(.*)",
 	],
 };

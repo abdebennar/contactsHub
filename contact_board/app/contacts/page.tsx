@@ -4,6 +4,7 @@ import { SkeletonTable } from "@/components/SkeletonTable";
 import { ClientPagination } from "@/components/ClientPagination";
 import { SearchInput } from "@/components/SearchInput";
 import clientPromise from "@/lib/mongo";
+import { Contact } from "@/types";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -27,33 +28,32 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 	// Build filter
 	const filter: any = {};
 
+
 	if (search) {
 		filter.$or = [
-			{ firstName: { $regex: search, $options: "i" } },
-			{ lastName: { $regex: search, $options: "i" } },
+			{ first_name: { $regex: search, $options: "i" } },
+			{ last_name: { $regex: search, $options: "i" } },
 			{ email: { $regex: search, $options: "i" } },
 			{ title: { $regex: search, $options: "i" } },
 		];
 	}
 
-	// Get total count and data in parallel
 	const [total, data] = await Promise.all([
 		db.collection("contacts_contact_rows").countDocuments(filter),
 		db
 			.collection("contacts_contact_rows")
 			.find(filter)
-			.sort({ firstName: 1, lastName: 1 })
+			.project({ id: 1, first_name: 1, last_name: 1, title: 1, department: 1, _id: 0 })
+			.sort({ first_name: 1, last_name: 1 })
 			.limit(limit)
 			.skip(offset)
 			.toArray(),
 	]);
 
-	const contacts = data.map(contact => ({
-		...contact,
-		_id: contact._id.toString(),
-	}));
+	// console.log("Contacts fetched:", contacts);
 
-	console.log("Contacts fetched:", contacts[0]);
+	const contacts: Contact[] = data as unknown as Contact[];
+
 
 	const totalPages = Math.ceil(total / limit);
 
@@ -64,21 +64,22 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 					<Users className="h-8 w-8" />
 					Contacts
 				</h1>
-				<p className="text-muted-foreground mt-1">
-					Browse {total.toLocaleString()} government agency contacts
-				</p>
+				<div className="flex justify-between items-center mt-1 text-muted-foreground">
+					<p>
+						Browse {total.toLocaleString()} government agency contacts
+					</p>
+					<p className="text-sm">
+						Showing {contacts.length} of {total.toLocaleString()} contacts
+					</p>
+				</div>
+
 			</div>
 
 			{/* Search */}
-			<div className="flex flex-col sm:flex-row gap-4">
+			{/* <div className="flex flex-col sm:flex-row gap-4">
 				<SearchInput defaultValue={search} placeholder="Search contacts..." />
-			</div>
+			</div> */}
 
-			{/* Results count */}
-			<div className="text-sm text-muted-foreground">
-				Showing {contacts.length} of {total.toLocaleString()} contacts
-				{search && ` matching "${search}"`}
-			</div>
 
 			{contacts.length === 0 ? (
 				<div className="text-center py-12 border rounded-lg">

@@ -28,42 +28,53 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 					{/* Fixed Top Bar */}
 					<header className="fixed top-0 left-0 right-0 z-50 bg-background border-b">
 						<div className="flex justify-between items-center px-6 h-16">
-							{/* Logo/Brand (optional) */}
+							{/* Logo/Brand on the left */}
 							<Link href={"/"} className="font-semibold text-lg">
 								MyApp
 							</Link>
 
-							<Link href={"/contacts"} className="font-semibold text-lg">
-								Contacts
-							</Link>
+							{/* Spacer to push links + auth to the right */}
+							<div className="flex items-center gap-20 ml-auto">
+								{/* Navigation Links */}
+								<div className="flex items-center gap-7">
+									<Link
+										href={"/contacts"}
+										className="text-l font-medium hover:text-primary transition-colors"
+									>
+										Contacts
+									</Link>
+									<Link
+										href={"/agencies"}
+										className="text-l font-medium hover:text-primary transition-colors"
+									>
+										Agencies
+									</Link>
+								</div>
 
-							<Link href={"/agencies"} className="font-semibold text-lg">
-								Agencies
-							</Link>
-
-							{/* Auth Buttons */}
-							<div className="flex items-center gap-4">
-								<SignedOut>
-									<SignInButton />
-									<SignUpButton>
-										<button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm h-10 px-5 cursor-pointer hover:bg-[#5639cc] transition">
-											Sign Up
-										</button>
-									</SignUpButton>
-								</SignedOut>
-								<SignedIn>
-									<UserButton
-										// afterSignOutUrl="/"
-										appearance={{
-											elements: {
-												avatarBox: "w-10 h-10"
-											}
-										}}
-									/>
-								</SignedIn>
+								{/* Auth Buttons / User Avatar */}
+								<div className="flex items-center">
+									<SignedOut>
+										<SignInButton />
+										<SignUpButton>
+											<button className="bg-[#6c47ff] text-white rounded-full font-medium text-sm h-10 px-5 cursor-pointer hover:bg-[#5639cc] transition">
+												Sign Up
+											</button>
+										</SignUpButton>
+									</SignedOut>
+									<SignedIn>
+										<UserButton
+											appearance={{
+												elements: {
+													avatarBox: "w-10 h-10"
+												}
+											}}
+										/>
+									</SignedIn>
+								</div>
 							</div>
 						</div>
 					</header>
+
 
 					{/* Main Content with top padding to account for fixed header */}
 					<main className="pt-16 min-h-screen">
@@ -74,3 +85,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 		</ClerkProvider >
 	);
 }
+

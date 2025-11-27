@@ -21,17 +21,17 @@ export const PaginationControls = ({ currentPage, totalPages }: PaginationContro
 
 	if (totalPages <= 1) return null;
 
-	const handlePageChange = (newPage: number) => {
+	const handlePageChange = (newPage: number): void => {
 		const params = new URLSearchParams(searchParams.toString());
 		params.set('page', newPage.toString());
 		router.push(`?${params.toString()}`, { scroll: false });
 	};
 
-	const pages = [];
-	const maxVisible = 5;
+	const pages: number[] = [];
+	const maxVisible: number = 5;
 
-	let startPage = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-	let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+	let startPage: number = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+	const endPage: number = Math.min(totalPages, startPage + maxVisible - 1);
 
 	if (endPage - startPage < maxVisible - 1) {
 		startPage = Math.max(1, endPage - maxVisible + 1);
@@ -46,16 +46,18 @@ export const PaginationControls = ({ currentPage, totalPages }: PaginationContro
 			<PaginationContent>
 				<PaginationItem>
 					<PaginationPrevious
-						onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+						onClick={(): void => { currentPage > 1 && handlePageChange(currentPage - 1); }}
 						className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+						size="default"
 					/>
 				</PaginationItem>
 
-				{pages.map((page) => (
+				{pages.map((page: number) => (
 					<PaginationItem key={page}>
 						<PaginationLink
-							onClick={() => handlePageChange(page)}
+							onClick={(): void => handlePageChange(page)}
 							isActive={page === currentPage}
+							size={"default"}
 							className="cursor-pointer"
 						>
 							{page}
@@ -65,8 +67,9 @@ export const PaginationControls = ({ currentPage, totalPages }: PaginationContro
 
 				<PaginationItem>
 					<PaginationNext
-						onClick={() => currentPage < totalPages && handlePageChange(currentPage + 1)}
+						onClick={(): void => { currentPage < totalPages && handlePageChange(currentPage + 1); }}
 						className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+						size="default"
 					/>
 				</PaginationItem>
 			</PaginationContent>

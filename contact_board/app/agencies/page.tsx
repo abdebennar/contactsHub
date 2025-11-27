@@ -1,10 +1,12 @@
 import { Building2 } from "lucide-react";
+import { Filter } from "mongodb";
 import { AgencyTable } from "@/components/AgencyTable";
-import { SkeletonTable } from "@/components/SkeletonTable";
+// import { SkeletonTable } from "@/components/SkeletonTable";
 import { ClientPagination } from "@/components/ClientPagination";
-import { SearchInput } from "@/components/SearchInput";
-import { SelectStateFilter } from "@/components/SelectStateFilter";
+// import { SearchInput } from "@/components/SearchInput";
+// import { SelectStateFilter } from "@/components/SelectStateFilter";
 import clientPromise from "@/lib/mongo";
+import { Agency } from "@/types";
 
 interface PageProps {
 	searchParams: Promise<{
@@ -30,7 +32,7 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 	const db = client.db();
 
 	// Build filter
-	const filter: any = {};
+	const filter: Filter<Agency> = {};
 
 	if (search) {
 		filter.$or = [
@@ -45,21 +47,19 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 
 	// Get total count and data in parallel
 	const [total, data] = await Promise.all([
-		db.collection("agencies_agency_rows").countDocuments(filter),
+		db.collection<Agency>("agencies_agency_rows").countDocuments(filter),
 		db
-			.collection("agencies_agency_rows")
-			.find(filter)
+			.collection<Agency>("agencies_agency_rows")
+			.find(filter, { projection: { _id: 0 } })
 			.sort({ name: 1 })
 			.limit(limit)
 			.skip(offset)
-			.toArray(),
+			.toArray()
 	]);
 
+	const agencies: Agency[] = data as unknown as Agency[];
 
-	const agencies = data.map(agency => ({
-		...agency,
-		_id: agency._id.toString(),
-	}));
+
 
 	console.log("Agencies fetched:", agencies[1]);
 
@@ -72,22 +72,25 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 					<Building2 className="h-8 w-8" />
 					Agencies
 				</h1>
-				<p className="text-muted-foreground mt-1">
-					Browse {total.toLocaleString()} government agencies and their contacts
-				</p>
+				<div className="flex justify-between items-center mt-1 text-muted-foreground">
+					<p>
+						Browse {total.toLocaleString()} government agencies and their contacts
+					</p>
+					<p className="text-sm">
+						Showing {agencies.length} of {total.toLocaleString()} agencies
+					</p>
+				</div>
+
 			</div>
 
 			{/* Search + State Filter */}
 			<div className="flex flex-col sm:flex-row gap-4">
-				<SearchInput defaultValue={search} placeholder="Search agencies..." />
+				{/* <SearchInput defaultValue={search} placeholder="Search agencies..." /> */}
 				{/* <SelectStateFilter defaultValue={state} /> */}
 			</div>
 
 			{/* Results count */}
-			<div className="text-sm text-muted-foreground">
-				Showing {agencies.length} of {total.toLocaleString()} agencies
-				{search && ` matching "${search}"`}
-			</div>
+
 
 			{agencies.length === 0 ? (
 				<div className="text-center py-12 border rounded-lg">

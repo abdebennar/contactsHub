@@ -1,4 +1,3 @@
-// components/ClientPagination.tsx
 "use client";
 
 import { PaginationControls } from "@/components/PaginationControls";
@@ -24,7 +23,7 @@ export function ClientPagination({ currentPage, totalPages }: ClientPaginationPr
 			<PaginationControls
 				currentPage={currentPage}
 				totalPages={totalPages}
-				onPageChange={handlePageChange}
+			// onPageChange={handlePageChange}
 			/>
 		</div>
 	);

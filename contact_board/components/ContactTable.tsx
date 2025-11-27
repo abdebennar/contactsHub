@@ -7,6 +7,7 @@ import { User, Eye } from "lucide-react";
 import { Contact } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { ContactDetailsDialog } from "@/components/ContactDetailsDialog";
+import { fetchContactDetails } from "@/actions/getConetentDetails";
 
 interface ContactTableProps {
 	contacts: Contact[];
@@ -15,9 +16,19 @@ interface ContactTableProps {
 export const ContactTable = ({ contacts }: ContactTableProps) => {
 	const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 	const safe = (value?: string | null) => value?.trim() || "__";
+	const [loading, setLoading] = useState(false);
 
-	const handleViewContact = (contact: Contact) => {
-		setSelectedContact(contact);
+	const handleViewContact = async (contact: Contact) => {
+		try {
+			setLoading(true);
+			// TODO  change to user Id 
+			const fullContact = await fetchContactDetails(contact.id); // server action
+			if (fullContact) setSelectedContact(fullContact);
+		} catch (err: any) {
+			alert(err.message); // show quota exceeded or error
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	return (
@@ -61,13 +72,23 @@ export const ContactTable = ({ contacts }: ContactTableProps) => {
 									</TableCell>
 
 									<TableCell className="text-right">
-										<Button
+										{/* <Button
 											size="sm"
 											variant="outline"
 											onClick={() => handleViewContact(contact)}
 										>
 											<Eye className="h-4 w-4 mr-1" />
 											View Contact
+										</Button> */}
+
+										<Button
+											size="sm"
+											variant="outline"
+											onClick={() => handleViewContact(contact)}
+											disabled={loading}
+										>
+											<Eye className="h-4 w-4 mr-1" />
+											{loading ? "Loading..." : "View Contact"}
 										</Button>
 									</TableCell>
 								</TableRow>

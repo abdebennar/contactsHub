@@ -3,6 +3,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Building2 } from "lucide-react";
 import { Agency } from "@/types";
+import { Button } from "@/components/ui/button";
 
 
 interface AgencyTableProps {
@@ -59,14 +60,6 @@ export const AgencyTable = ({ agencies }: AgencyTableProps) => {
 										"_"
 									)}
 								</TableCell>
-
-
-								{/* TODO make the table cells more tall */}
-								{/* <TableCell className="text-right">
-									<Button size="sm" onClick={() => router.push(`/ contacts / ${ agency.id }`)}>
-									View Contacts
-								</Button>
-							</TableCell> */}
 							</TableRow>
 						))
 					)}
