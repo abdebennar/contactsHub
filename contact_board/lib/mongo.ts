@@ -5,7 +5,7 @@ dotenv.config();
 
 if (!process.env.MONGO_URI) throw new Error("❌ MONGO_URI not defined");
 
-const uri = process.env.MONGO_URI || "";
+const uri = process.env.MONGO_URI;
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
@@ -14,7 +14,7 @@ let clientPromise: Promise<MongoClient>;
 // let isConnected = false;
 const options = {
 	tls: true,
-	tlsAllowInvalidCertificates: true, // Only for development/testing
+	tlsAllowInvalidCertificates: true,
 	serverSelectionTimeoutMS: 5000,
 	socketTimeoutMS: 45000,
 };
