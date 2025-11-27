@@ -15,21 +15,21 @@ interface ContactTableProps {
 
 export const ContactTable = ({ contacts }: ContactTableProps) => {
 	const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-	const safe = (value?: string | null) => value?.trim() || "__";
-	const [loading, setLoading] = useState(false);
+	const safe = (value?: string | null) => value?.trim() || "_";
+	const [loadingContactId, setLoadingContactId] = useState<string | null>(null);
 
 	const handleViewContact = async (contact: Contact) => {
 		try {
-			setLoading(true);
-			// TODO  change to user Id 
-			const fullContact = await fetchContactDetails(contact.id); // server action
+			setLoadingContactId(contact.id);
+			const fullContact = await fetchContactDetails(contact.id);
 			if (fullContact) setSelectedContact(fullContact);
 		} catch (err: any) {
-			alert(err.message); // show quota exceeded or error
+			alert(err.message);
 		} finally {
-			setLoading(false);
+			setLoadingContactId(null);
 		}
 	};
+
 
 	return (
 		<>
@@ -67,29 +67,21 @@ export const ContactTable = ({ contacts }: ContactTableProps) => {
 										{contact.department ? (
 											<Badge variant="secondary">{contact.department}</Badge>
 										) : (
-											"__"
+											"-"
 										)}
 									</TableCell>
 
 									<TableCell className="text-right">
-										{/* <Button
-											size="sm"
-											variant="outline"
-											onClick={() => handleViewContact(contact)}
-										>
-											<Eye className="h-4 w-4 mr-1" />
-											View Contact
-										</Button> */}
-
 										<Button
 											size="sm"
 											variant="outline"
 											onClick={() => handleViewContact(contact)}
-											disabled={loading}
+											disabled={loadingContactId === contact.id}
 										>
 											<Eye className="h-4 w-4 mr-1" />
-											{loading ? "Loading..." : "View Contact"}
+											{loadingContactId === contact.id ? "Loading..." : "View Contact"}
 										</Button>
+
 									</TableCell>
 								</TableRow>
 							))

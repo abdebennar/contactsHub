@@ -3,7 +3,10 @@ import { type Metadata } from "next";
 import { ClerkProvider, SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { NavLinks } from "@/components/NavLink";
 import Link from "next/link";
+import { Home } from "lucide-react"
+
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -30,25 +33,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 						<div className="flex justify-between items-center px-6 h-16">
 							{/* Logo/Brand on the left */}
 							<Link href={"/"} className="font-semibold text-lg">
-								MyApp
+								<Home />
 							</Link>
 
 							{/* Spacer to push links + auth to the right */}
 							<div className="flex items-center gap-20 ml-auto">
 								{/* Navigation Links */}
 								<div className="flex items-center gap-7">
-									<Link
-										href={"/contacts"}
-										className="text-l font-medium hover:text-primary transition-colors"
-									>
-										Contacts
-									</Link>
-									<Link
-										href={"/agencies"}
-										className="text-l font-medium hover:text-primary transition-colors"
-									>
-										Agencies
-									</Link>
+									<NavLinks />
 								</div>
 
 								{/* Auth Buttons / User Avatar */}

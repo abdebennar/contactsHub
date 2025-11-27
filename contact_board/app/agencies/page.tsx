@@ -45,7 +45,6 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 		filter.state_code = state;
 	}
 
-	// Get total count and data in parallel
 	const [total, data] = await Promise.all([
 		db.collection<Agency>("agencies_agency_rows").countDocuments(filter),
 		db
@@ -59,9 +58,6 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 
 	const agencies: Agency[] = data as unknown as Agency[];
 
-
-
-	console.log("Agencies fetched:", agencies[1]);
 
 	const totalPages = Math.ceil(total / limit);
 
@@ -84,10 +80,10 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 			</div>
 
 			{/* Search + State Filter */}
-			<div className="flex flex-col sm:flex-row gap-4">
-				{/* <SearchInput defaultValue={search} placeholder="Search agencies..." /> */}
-				{/* <SelectStateFilter defaultValue={state} /> */}
-			</div>
+			{/* <div className="flex flex-col sm:flex-row gap-4"> */}
+			{/* <SearchInput defaultValue={search} placeholder="Search agencies..." /> */}
+			{/* <SelectStateFilter defaultValue={state} /> */}
+			{/* </div> */}
 
 			{/* Results count */}
 

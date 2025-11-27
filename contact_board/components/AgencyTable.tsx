@@ -12,7 +12,7 @@ interface AgencyTableProps {
 
 export const AgencyTable = ({ agencies }: AgencyTableProps) => {
 
-	const safe = (value?: string | null) => value?.trim() || "__";
+	const safe = (value?: string | null) => value?.trim() || "_";
 
 	return (
 		<div className="rounded-md border">
@@ -35,7 +35,7 @@ export const AgencyTable = ({ agencies }: AgencyTableProps) => {
 						</TableRow>
 					) : (
 						agencies.map((agency) => (
-							<TableRow key={agency.id}>
+							<TableRow key={agency.id} className="h-[49px]">
 								<TableCell className="font-medium">
 									<div className="flex items-center gap-2">
 										<Building2 className="h-4 w-4 text-muted-foreground" />

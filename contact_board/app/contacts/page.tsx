@@ -5,6 +5,11 @@ import { ClientPagination } from "@/components/ClientPagination";
 import { SearchInput } from "@/components/SearchInput";
 import clientPromise from "@/lib/mongo";
 import { Contact } from "@/types";
+import { Filter } from "mongodb";
+import { ViewsTodayBadge } from "@/components/ViewsTodayBadge";
+import { auth } from "@clerk/nextjs/server";
+
+
 
 interface PageProps {
 	searchParams: Promise<{
@@ -16,6 +21,7 @@ interface PageProps {
 export default async function ContactsPage({ searchParams }: PageProps) {
 	const params = await searchParams;
 
+	const { userId } = await auth();
 	const page = parseInt(params.page || "1");
 	const search = params.search || "";
 	const limit = 20;
@@ -26,7 +32,7 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 	const db = client.db();
 
 	// Build filter
-	const filter: any = {};
+	const filter: Filter<Contact> = {};
 
 
 	if (search) {
@@ -38,7 +44,8 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 		];
 	}
 
-	const [total, data] = await Promise.all([
+	const [viewdTodayData, total, data] = await Promise.all([
+		db.collection("user_views").findOne({ userId: userId }, { projection: { viewedCount: 1, _id: 0 } }),
 		db.collection("contacts_contact_rows").countDocuments(filter),
 		db
 			.collection("contacts_contact_rows")
@@ -50,9 +57,8 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 			.toArray(),
 	]);
 
-	// console.log("Contacts fetched:", contacts);
-
 	const contacts: Contact[] = data as unknown as Contact[];
+	const viewedToday = viewdTodayData?.viewedCount || 0;
 
 
 	const totalPages = Math.ceil(total / limit);
@@ -60,10 +66,17 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 	return (
 		<div className="container mx-auto px-4 py-8 space-y-6">
 			<div>
-				<h1 className="text-3xl font-bold flex items-center gap-2">
-					<Users className="h-8 w-8" />
-					Contacts
-				</h1>
+				<div className="flex items-center justify-between">
+					<h1 className="text-3xl font-bold flex items-center gap-2">
+						<Users className="h-8 w-8" />
+						Contacts
+					</h1>
+
+
+					{/* TODO day view limit is here  */}
+					<ViewsTodayBadge viewsLimit={50} viewsToday={viewedToday} />
+				</div>
+
 				<div className="flex justify-between items-center mt-1 text-muted-foreground">
 					<p>
 						Browse {total.toLocaleString()} government agency contacts
@@ -72,7 +85,6 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 						Showing {contacts.length} of {total.toLocaleString()} contacts
 					</p>
 				</div>
-
 			</div>
 
 			{/* Search */}
