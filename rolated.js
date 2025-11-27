@@ -1,39 +1,66 @@
-// checkRelations.js
-const fs = require("fs");
-const path = require("path");
-const csv = require("csv-parser");
+import fs from "fs";
+import path from "path";
 
-const agenciesFile = "./contactsHub/agencies_agency_rows.csv";
-const contactsFile = "./contactsHub/contacts_contact_rows.csv"
+const IGNORED_DIRS = new Set([
+  "node_modules",
+  ".git",
+  ".next",
+  "dist",
+  "build",
+  "coverage",
+]);
 
-const agencies = [];
-const contacts = [];
+function isVisible(name) {
+  return !name.startsWith("."); // no dotfiles
+}
 
-// Load agencies
-fs.createReadStream(agenciesFile)
-  .pipe(csv())
-  .on("data", (row) => agencies.push({ id: row.id, name: row.name }))
-  .on("end", () => {
-    // Load contacts
-    fs.createReadStream(contactsFile)
-      .pipe(csv())
-      .on("data", (row) =>
-        contacts.push({ id: row.id, agency_id: row.agency_id, name: row.first_name + " " + row.last_name })
-      )
-      .on("end", () => {
-        let matchedCount = 0;
+function printTree(dir, prefix = "") {
+  const entries = fs
+    .readdirSync(dir, { withFileTypes: true })
+    .filter((entry) => {
+      // skip invisible files and ignored dirs
+      if (!isVisible(entry.name)) return false;
+      if (entry.isDirectory() && IGNORED_DIRS.has(entry.name)) return false;
+      return true;
+    });
 
-        agencies.forEach((agency) => {
-          const relatedContacts = contacts.filter((c) => c.agency_id === agency.id);
-          if (relatedContacts.length > 0) {
-            matchedCount++;
-            console.log(`Agency "${agency.name}" has ${relatedContacts.length} contact(s):`);
-            relatedContacts.forEach((c) => console.log(`  - ${c.name}`));
-          }
-        });
+  entries.forEach((entry, index) => {
+    const connector = index === entries.length - 1 ? "└── " : "├── ";
+    const fullPath = path.join(dir, entry.name);
 
-        console.log(`\nTotal agencies: ${agencies.length}`);
-        console.log(`Agencies with contacts: ${matchedCount}`);
-        console.log(`Agencies with no contacts: ${agencies.length - matchedCount}`);
+    console.log(prefix + connector + entry.name);
+
+    // If FILE → print content
+    if (entry.isFile()) {
+      const content = fs.readFileSync(fullPath, "utf8");
+
+      const filePrefix =
+        index === entries.length - 1 ? "    " : "│   ";
+
+      console.log(
+        prefix +
+          filePrefix +
+          "----- FILE CONTENT START --------------------------------"
+      );
+
+      content.split("\n").forEach((line) => {
+        console.log(prefix + filePrefix + line);
       });
+
+      console.log(
+        prefix +
+          filePrefix +
+          "----- FILE CONTENT END ----------------------------------"
+      );
+    }
+
+    // If DIRECTORY → recurse
+    if (entry.isDirectory()) {
+      const newPrefix =
+        index === entries.length - 1 ? "    " : "│   ";
+      printTree(fullPath, prefix + newPrefix);
+    }
   });
+}
+
+printTree(process.argv[2] || ".");

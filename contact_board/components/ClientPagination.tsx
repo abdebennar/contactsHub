@@ -20,12 +20,12 @@ export function ClientPagination({ currentPage, totalPages }: ClientPaginationPr
 	};
 
 	return (
-		<div className= "flex justify-center" >
-		<PaginationControls
-				currentPage={ currentPage }
-	totalPages = { totalPages }
-	onPageChange = { handlePageChange }
-		/>
+		<div className="flex justify-center" >
+			<PaginationControls
+				currentPage={currentPage}
+				totalPages={totalPages}
+				onPageChange={handlePageChange}
+			/>
 		</div>
 	);
 }
