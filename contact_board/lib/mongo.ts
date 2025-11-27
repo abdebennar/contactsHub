@@ -5,13 +5,20 @@ dotenv.config();
 
 if (!process.env.MONGO_URI) throw new Error("❌ MONGO_URI not defined");
 
-const uri = process.env.MONGO_URI;
+const uri = process.env.MONGO_URI || "";
 
 let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
 // Track connection state
-let isConnected = false;
+// let isConnected = false;
+const options = {
+	tls: true,
+	tlsAllowInvalidCertificates: true, // Only for development/testing
+	serverSelectionTimeoutMS: 5000,
+	socketTimeoutMS: 45000,
+};
+
 
 declare global {
 	var _mongoClientPromise: Promise<MongoClient> | undefined;
@@ -20,7 +27,7 @@ declare global {
 
 async function connectClient() {
 	try {
-		const client = new MongoClient(uri);
+		const client = new MongoClient(uri, options);
 		await client.connect();
 
 		console.log("✅ MongoDB Connected");
