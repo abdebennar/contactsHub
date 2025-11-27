@@ -23,6 +23,8 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 	const limit = 20;
 	const offset = (page - 1) * limit;
 
+
+	// TODO  use filter and search or not 
 	// Fetch data directly from MongoDB
 	const client = await clientPromise;
 	const db = client.db();
@@ -59,6 +61,7 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 		_id: agency._id.toString(),
 	}));
 
+	console.log("Agencies fetched:", agencies[1]);
 
 	const totalPages = Math.ceil(total / limit);
 

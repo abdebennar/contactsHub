@@ -2,18 +2,23 @@ export interface Agency {
 	id: string;
 	name: string;
 	state: string;
-	city: string;
-	contactCount: number;
+	state_code: string;
+	type: string;
+	website: string;
 }
+
 
 export interface Contact {
 	id: string;
-	firstName: string;
-	lastName: string;
+	first_name: string;
+	last_name: string;
+	email: string;
 	title: string;
+	phone: string;
+	email_type: string;
 	department: string;
-	agencyId: string;
-	agencyName: string;
+	// agencyId: string;
+	// agencyName: string;
 }
 
 export interface ContactDetails extends Contact {

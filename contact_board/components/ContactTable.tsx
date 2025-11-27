@@ -1,58 +1,87 @@
+"use client";
+
+import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { User, Eye } from "lucide-react";
 import { Contact } from "@/types";
-import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { ContactDetailsDialog } from "@/components/ContactDetailsDialog";
 
 interface ContactTableProps {
 	contacts: Contact[];
-	onViewContact: (id: string) => void;
 }
 
-export const ContactTable = ({ contacts, onViewContact }: ContactTableProps) => {
+export const ContactTable = ({ contacts }: ContactTableProps) => {
+	const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+	const safe = (value?: string | null) => value?.trim() || "__";
+
+	const handleViewContact = (contact: Contact) => {
+		setSelectedContact(contact);
+	};
+
 	return (
-		<div className="rounded-md border">
-			<Table>
-				<TableHeader>
-					<TableRow>
-						<TableHead>Name</TableHead>
-						<TableHead>Title</TableHead>
-						<TableHead>Department</TableHead>
-						<TableHead className="text-right">Actions</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
-					{(contacts || []).length === 0 ? (
+		<>
+			<div className="rounded-md border">
+				<Table>
+					<TableHeader>
 						<TableRow>
-							<TableCell colSpan={4} className="text-center text-muted-foreground">
-								No contacts found
-							</TableCell>
+							<TableHead>Name</TableHead>
+							<TableHead>Title</TableHead>
+							<TableHead>Department</TableHead>
+							<TableHead className="text-right">Actions</TableHead>
 						</TableRow>
-					) : (
-						contacts.map((contact) => (
-							<TableRow key={contact.id}>
-								<TableCell className="font-medium">
-									{contact.firstName} {contact.lastName}
-								</TableCell>
-								<TableCell className="text-muted-foreground">{contact.title}</TableCell>
-								<TableCell>
-									<Badge variant="secondary">{contact.department}</Badge>
-								</TableCell>
-								<TableCell className="text-right">
-									<Button
-										size="sm"
-										variant="outline"
-										onClick={() => onViewContact(contact.id)}
-									>
-										<Eye className="h-4 w-4 mr-1" />
-										View Contact
-									</Button>
+					</TableHeader>
+
+					<TableBody>
+						{contacts.length === 0 ? (
+							<TableRow>
+								<TableCell colSpan={4} className="text-center text-muted-foreground">
+									No contacts found
 								</TableCell>
 							</TableRow>
-						))
-					)}
-				</TableBody>
-			</Table>
-		</div>
+						) : (
+							contacts.map((contact) => (
+								<TableRow key={contact.id}>
+									<TableCell className="font-medium">
+										<div className="flex items-center gap-2">
+											<User className="h-4 w-4 text-muted-foreground" />
+											{safe(contact.first_name)} {safe(contact.last_name)}
+										</div>
+									</TableCell>
+
+									<TableCell>{safe(contact.title)}</TableCell>
+
+									<TableCell>
+										{contact.department ? (
+											<Badge variant="secondary">{contact.department}</Badge>
+										) : (
+											"__"
+										)}
+									</TableCell>
+
+									<TableCell className="text-right">
+										<Button
+											size="sm"
+											variant="outline"
+											onClick={() => handleViewContact(contact)}
+										>
+											<Eye className="h-4 w-4 mr-1" />
+											View Contact
+										</Button>
+									</TableCell>
+								</TableRow>
+							))
+						)}
+					</TableBody>
+				</Table>
+			</div>
+
+			<ContactDetailsDialog
+				open={!!selectedContact}
+				onOpenChange={(open) => !open && setSelectedContact(null)}
+				contact={selectedContact}
+			/>
+		</>
 	);
 };

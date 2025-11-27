@@ -1,18 +1,17 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Agency } from "@/types";
 import { Building2 } from "lucide-react";
-import { redirect } from "next/navigation";
+import { Agency } from "@/types";
+
 
 interface AgencyTableProps {
 	agencies: Agency[];
 }
 
 export const AgencyTable = ({ agencies }: AgencyTableProps) => {
-	const router = useRouter();
+
+	const safe = (value?: string | null) => value?.trim() || "__";
 
 	return (
 		<div className="rounded-md border">
@@ -21,11 +20,11 @@ export const AgencyTable = ({ agencies }: AgencyTableProps) => {
 					<TableRow>
 						<TableHead>Agency Name</TableHead>
 						<TableHead>State</TableHead>
-						<TableHead>City</TableHead>
-						<TableHead className="text-right">Contacts</TableHead>
-						<TableHead className="text-right">Actions</TableHead>
+						<TableHead>Type</TableHead>
+						<TableHead>Website</TableHead>
 					</TableRow>
 				</TableHeader>
+
 				<TableBody>
 					{agencies.length === 0 ? (
 						<TableRow>
@@ -39,25 +38,40 @@ export const AgencyTable = ({ agencies }: AgencyTableProps) => {
 								<TableCell className="font-medium">
 									<div className="flex items-center gap-2">
 										<Building2 className="h-4 w-4 text-muted-foreground" />
-										{agency.name}
+										{safe(agency.name)}
 									</div>
 								</TableCell>
-								<TableCell>{agency.state}</TableCell>
-								<TableCell>{agency.city}</TableCell>
-								<TableCell className="text-right">{agency.contactCount}</TableCell>
-								<TableCell className="text-right">
-									<Button
-										size="sm"
-										onClick={() => redirect(`/contacts/${agency.id}`)}
-									>
-										View Contacts
-									</Button>
+
+								<TableCell>{safe(`${agency.state} (${agency.state_code})`)}</TableCell>
+								<TableCell>{safe(agency.type)}</TableCell>
+
+								<TableCell>
+									{agency.website ? (
+										<a
+											href={agency.website}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="text-blue-600 underline"
+										>
+											{agency.website}
+										</a>
+									) : (
+										"_"
+									)}
 								</TableCell>
+
+
+								{/* TODO make the table cells more tall */}
+								{/* <TableCell className="text-right">
+									<Button size="sm" onClick={() => router.push(`/ contacts / ${ agency.id }`)}>
+									View Contacts
+								</Button>
+							</TableCell> */}
 							</TableRow>
 						))
 					)}
 				</TableBody>
 			</Table>
-		</div>
+		</div >
 	);
 };
