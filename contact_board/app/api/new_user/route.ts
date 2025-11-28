@@ -1,5 +1,5 @@
-import { Webhook } from "svix";
-import { headers } from "next/headers";
+import { verifyWebhook } from '@clerk/nextjs/webhooks'
+import { NextRequest } from 'next/server'
 import clientPromise from "@/lib/mongo";
 
 interface UserCreatedData {
@@ -15,66 +15,36 @@ interface WebhookEvent {
 	data: UserCreatedData;
 }
 
-export async function POST(req: Request) {
-	const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+export async function POST(req: NextRequest) {
+	try {
+		const evt = await verifyWebhook(req) as WebhookEvent;
 
-	if (!WEBHOOK_SECRET) {
-		return new Response("Webhook secret not configured", { status: 500 });
+		const { type, data } = evt;
+
+		if (type === "user.created") {
+
+			const client = await clientPromise;
+			const db = client.db();
+
+			const userDoc = {
+				userId: data.id,
+				dailyViews: {},
+				createdAt: new Date(),
+				updatedAt: new Date()
+			};
+
+			await db.collection("users").updateOne(
+				{ userId: data.id },
+				{ $setOnInsert: userDoc },
+				{ upsert: true }
+			);
+
+			console.log("User inserted/verified in DB");
+		}
+
+		return new Response('Webhook received', { status: 200 });
+	} catch (err) {
+		console.error('Error verifying webhook:', err);
+		return new Response('Error verifying webhook', { status: 400 });
 	}
-
-
-	const headerPayload = headers();
-	const svix_id = (await headerPayload).get("svix-id");
-	const svix_timestamp = (await headerPayload).get("svix-timestamp");
-	const svix_signature = (await headerPayload).get("svix-signature");
-
-	if (!svix_id || !svix_timestamp || !svix_signature) {
-		return new Response("Missing Svix headers", { status: 400 });
-	}
-
-
-	const payload = await req.json();
-	const body = JSON.stringify(payload);
-
-
-	const wh = new Webhook(WEBHOOK_SECRET);
-	const evt = wh.verify(body, {
-		"svix-id": svix_id,
-		"svix-timestamp": svix_timestamp,
-		"svix-signature": svix_signature,
-	}) as WebhookEvent;
-
-	const { type, data } = evt;
-
-	console.log("Webhook event:", type);
-
-
-	if (type === "user.created") {
-
-		// debug 
-		console.log("[info] New user data: ||||||||||||||||||||||", data);
-
-		// const client = await clientPromise;
-		// const db = client.db();
-
-		// const userDoc = {
-		// 	clerkId: data.id,
-		// 	email: data.email_addresses[0]?.email_address ?? null,
-		// 	firstName: data.first_name ?? "",
-		// 	lastName: data.last_name ?? "",
-		// 	imageUrl: data.image_url ?? null,
-		// 	createdAt: new Date(),
-		// };
-
-
-		// await db.collection("users").updateOne(
-		// 	{ clerkId: data.id },
-		// 	{ $setOnInsert: userDoc },
-		// 	{ upsert: true }
-		// );
-
-		console.log("User inserted/verified in DB");
-	}
-
-	return new Response("", { status: 200 });
 }

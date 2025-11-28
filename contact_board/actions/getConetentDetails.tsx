@@ -15,23 +15,18 @@ export async function fetchContactDetails(contactId: string): Promise<Contact | 
 	const db = client.db();
 
 	const today = new Date().toISOString().slice(0, 10);
-
-	// find user record
 	const user = await db.collection("users").findOne({ userId });
 
-	// ❌ user does not exist in DB → block access
 	if (!user) {
-		throw new Error("User not found in database");
+		throw new Error("User not found: sign-up to view contact details");
 	}
 
-	// current count for today
 	const todayViews = user.dailyViews?.[today] ?? 0;
 
 	if (todayViews >= 50) {
 		throw new Error("Daily limit exceeded");
 	}
 
-	// fetch contact details (full details)
 	const contact = await db
 		.collection("contacts_contact_rows")
 		.findOne(
@@ -43,7 +38,6 @@ export async function fetchContactDetails(contactId: string): Promise<Contact | 
 		return null;
 	}
 
-	// increment that user's count for today
 	await db.collection("users").updateOne(
 		{ userId },
 		{
