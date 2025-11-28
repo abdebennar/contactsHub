@@ -1,6 +1,8 @@
-// Example with Next.js API route
+"use server";
+
 import { Webhook } from 'svix'
 import { headers } from 'next/headers'
+// import { clientPromise } from '@/lib/mongo';
 
 
 // TODO move to types 
@@ -54,7 +56,27 @@ export async function POST(req: Request) {
 	// Handle the webhook
 	const { type, data } = evt
 
+
+
+	console.log('Received webhook event:', type);
+	console.log('User data:', data);
+
 	// if (type === 'user.created') {
+
+	// 	const client = await clientPromise;
+	// 	const db = client.db();
+
+	// 	const today = new Date().toISOString().slice(0, 10);
+
+
+	// 	const doc = {
+	// 		date: today,
+	// 		userId: data.userId,
+	// 		viewedCount: viewedCount,
+	// 	};
+
+	// 	db.collection("user_views").add
+
 	// 	await createUserInDatabase({
 	// 		clerkId: data.id,
 	// 		email: data.email_addresses[0].email_address,

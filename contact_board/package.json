@@ -5,7 +5,6 @@
 	"type": "module",
 	"scripts": {
 		"dev": "next dev",
-		"ts": "tsc --noEmit --watch",
 		"build": "next build",
 		"start": "next start",
 		"migrate": "ts-node scripts/migrate/load_data.ts",

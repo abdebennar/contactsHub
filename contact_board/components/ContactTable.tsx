@@ -8,6 +8,9 @@ import { Contact } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { ContactDetailsDialog } from "@/components/ContactDetailsDialog";
 import { fetchContactDetails } from "@/actions/getConetentDetails";
+import { useViews } from "@/components/ViewsProvider";
+import { UpgradeDialog } from "@/components/UpgradeDialog";
+// import { Error } from "@/components/ui/error";
 
 interface ContactTableProps {
 	contacts: Contact[];
@@ -15,21 +18,30 @@ interface ContactTableProps {
 
 export const ContactTable = ({ contacts }: ContactTableProps) => {
 	const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+	const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
 	const safe = (value?: string | null) => value?.trim() || "_";
 	const [loadingContactId, setLoadingContactId] = useState<string | null>(null);
+	const { incrementViews } = useViews();
 
 	const handleViewContact = async (contact: Contact) => {
 		try {
 			setLoadingContactId(contact.id);
 			const fullContact = await fetchContactDetails(contact.id);
-			if (fullContact) setSelectedContact(fullContact);
+			if (fullContact) {
+				setSelectedContact(fullContact);
+				incrementViews(); // Update the badge immediately
+			}
 		} catch (err: any) {
-			alert(err.message);
+			// Show upgrade dialog when daily limit is exceeded
+			if (err.message === "Daily limit exceeded") {
+				setShowUpgradeDialog(true);
+			} else {
+				alert(err.message);
+			}
 		} finally {
 			setLoadingContactId(null);
 		}
 	};
-
 
 	return (
 		<>
@@ -81,7 +93,6 @@ export const ContactTable = ({ contacts }: ContactTableProps) => {
 											<Eye className="h-4 w-4 mr-1" />
 											{loadingContactId === contact.id ? "Loading..." : "View Contact"}
 										</Button>
-
 									</TableCell>
 								</TableRow>
 							))
@@ -94,6 +105,11 @@ export const ContactTable = ({ contacts }: ContactTableProps) => {
 				open={!!selectedContact}
 				onOpenChange={(open) => !open && setSelectedContact(null)}
 				contact={selectedContact}
+			/>
+
+			<UpgradeDialog
+				open={showUpgradeDialog}
+				onOpenChange={setShowUpgradeDialog}
 			/>
 		</>
 	);

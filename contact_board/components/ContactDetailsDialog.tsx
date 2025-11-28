@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Copy, Mail, Phone, Building2, Briefcase, Users } from "lucide-react";
+import { Copy, Mail, Phone, Briefcase, Users } from "lucide-react";
 import { ContactDetails } from "@/types";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";

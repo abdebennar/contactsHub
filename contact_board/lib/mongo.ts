@@ -7,7 +7,6 @@ if (!process.env.MONGO_URI) throw new Error("❌ MONGO_URI not defined");
 
 const uri = process.env.MONGO_URI;
 
-let client: MongoClient;
 let clientPromise: Promise<MongoClient>;
 
 // Track connection state

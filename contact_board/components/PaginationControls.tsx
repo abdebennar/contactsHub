@@ -46,7 +46,7 @@ export const PaginationControls = ({ currentPage, totalPages }: PaginationContro
 			<PaginationContent>
 				<PaginationItem>
 					<PaginationPrevious
-						onClick={(): void => { currentPage > 1 && handlePageChange(currentPage - 1); }}
+						onClick={(): void => { if (currentPage > 1) handlePageChange(currentPage - 1); }}
 						className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
 						size="default"
 					/>
@@ -67,7 +67,7 @@ export const PaginationControls = ({ currentPage, totalPages }: PaginationContro
 
 				<PaginationItem>
 					<PaginationNext
-						onClick={(): void => { currentPage < totalPages && handlePageChange(currentPage + 1); }}
+						onClick={(): void => { if (currentPage < totalPages) handlePageChange(currentPage + 1); }}
 						className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
 						size="default"
 					/>

@@ -1,7 +1,6 @@
 import fs from 'fs';
 import csv from 'csv-parser';
 import { MongoClient } from 'mongodb';
-import path from 'path';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -24,6 +23,7 @@ const importCSV = async (filePath: string, dbName: string, collectionName: strin
 		});
 };
 
-// Usage
-importCSV('./data/agencies_agency_rows.csv', 'abdebennar', 'agencies_agency_rows');
-importCSV('./data/contacts_contact_rows.csv', 'abdebennar', 'contacts_contact_rows');
+
+
+importCSV('@/data/agencies_agency_rows.csv', 'abdebennar', 'agencies_agency_rows');
+importCSV('@/data/contacts_contact_rows.csv', 'abdebennar', 'contacts_contact_rows');
