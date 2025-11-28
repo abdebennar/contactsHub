@@ -1,5 +1,3 @@
-"use server";
-
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import clientPromise from "@/lib/mongo";
@@ -52,24 +50,28 @@ export async function POST(req: Request) {
 
 
 	if (type === "user.created") {
-		const client = await clientPromise;
-		const db = client.db();
 
-		const userDoc = {
-			clerkId: data.id,
-			email: data.email_addresses[0]?.email_address ?? null,
-			firstName: data.first_name ?? "",
-			lastName: data.last_name ?? "",
-			imageUrl: data.image_url ?? null,
-			createdAt: new Date(),
-		};
+		// debug 
+		console.log("[info] New user data: ||||||||||||||||||||||", data);
+
+		// const client = await clientPromise;
+		// const db = client.db();
+
+		// const userDoc = {
+		// 	clerkId: data.id,
+		// 	email: data.email_addresses[0]?.email_address ?? null,
+		// 	firstName: data.first_name ?? "",
+		// 	lastName: data.last_name ?? "",
+		// 	imageUrl: data.image_url ?? null,
+		// 	createdAt: new Date(),
+		// };
 
 
-		await db.collection("users").updateOne(
-			{ clerkId: data.id },
-			{ $setOnInsert: userDoc },
-			{ upsert: true }
-		);
+		// await db.collection("users").updateOne(
+		// 	{ clerkId: data.id },
+		// 	{ $setOnInsert: userDoc },
+		// 	{ upsert: true }
+		// );
 
 		console.log("User inserted/verified in DB");
 	}
