@@ -1,11 +1,8 @@
 "use server";
 
-import { Webhook } from 'svix'
-import { headers } from 'next/headers'
-// import { clientPromise } from '@/lib/mongo';
-
-
-// TODO move to types 
+import { Webhook } from "svix";
+import { headers } from "next/headers";
+import clientPromise from "@/lib/mongo";
 
 interface UserCreatedData {
 	id: string;
@@ -16,75 +13,66 @@ interface UserCreatedData {
 }
 
 interface WebhookEvent {
-	type: 'user.created' | string;
+	type: "user.created" | string;
 	data: UserCreatedData;
 }
 
 export async function POST(req: Request) {
-	const WEBHOOK_SECRET: string | undefined = process.env.CLERK_WEBHOOK_SECRET
-
-	// Get headers
-	const headerPayload = headers()
-	const svix_id = (await headerPayload).get("svix-id")
-	const svix_timestamp = (await headerPayload).get("svix-timestamp")
-	const svix_signature = (await headerPayload).get("svix-signature")
-
-	if (!svix_id || !svix_timestamp || !svix_signature) {
-		return new Response('Missing Svix headers', { status: 400 })
-	}
-
-
-	// add all above in a promise.all to optimize
-
-	// Get body
-	const payload = await req.json()
-	const body = JSON.stringify(payload)
-
+	const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
 
 	if (!WEBHOOK_SECRET) {
-		return new Response('Webhook secret not configured', { status: 500 })
+		return new Response("Webhook secret not configured", { status: 500 });
 	}
 
-	// Verify webhook
-	const wh = new Webhook(WEBHOOK_SECRET)
+
+	const headerPayload = headers();
+	const svix_id = (await headerPayload).get("svix-id");
+	const svix_timestamp = (await headerPayload).get("svix-timestamp");
+	const svix_signature = (await headerPayload).get("svix-signature");
+
+	if (!svix_id || !svix_timestamp || !svix_signature) {
+		return new Response("Missing Svix headers", { status: 400 });
+	}
+
+
+	const payload = await req.json();
+	const body = JSON.stringify(payload);
+
+
+	const wh = new Webhook(WEBHOOK_SECRET);
 	const evt = wh.verify(body, {
 		"svix-id": svix_id,
 		"svix-timestamp": svix_timestamp,
 		"svix-signature": svix_signature,
 	}) as WebhookEvent;
 
-	// Handle the webhook
-	const { type, data } = evt
+	const { type, data } = evt;
+
+	console.log("Webhook event:", type);
 
 
+	if (type === "user.created") {
+		const client = await clientPromise;
+		const db = client.db();
 
-	console.log('Received webhook event:', type);
-	console.log('User data:', data);
+		const userDoc = {
+			clerkId: data.id,
+			email: data.email_addresses[0]?.email_address ?? null,
+			firstName: data.first_name ?? "",
+			lastName: data.last_name ?? "",
+			imageUrl: data.image_url ?? null,
+			createdAt: new Date(),
+		};
 
-	// if (type === 'user.created') {
 
-	// 	const client = await clientPromise;
-	// 	const db = client.db();
+		await db.collection("users").updateOne(
+			{ clerkId: data.id },
+			{ $setOnInsert: userDoc },
+			{ upsert: true }
+		);
 
-	// 	const today = new Date().toISOString().slice(0, 10);
+		console.log("User inserted/verified in DB");
+	}
 
-
-	// 	const doc = {
-	// 		date: today,
-	// 		userId: data.userId,
-	// 		viewedCount: viewedCount,
-	// 	};
-
-	// 	db.collection("user_views").add
-
-	// 	await createUserInDatabase({
-	// 		clerkId: data.id,
-	// 		email: data.email_addresses[0].email_address,
-	// 		firstName: data.first_name,
-	// 		lastName: data.last_name,
-	// 		imageUrl: data.image_url,
-	// 	})
-	// }
-
-	return new Response('', { status: 200 })
+	return new Response("", { status: 200 });
 }

@@ -10,7 +10,6 @@ import { ContactDetailsDialog } from "@/components/ContactDetailsDialog";
 import { fetchContactDetails } from "@/actions/getConetentDetails";
 import { useViews } from "@/components/ViewsProvider";
 import { UpgradeDialog } from "@/components/UpgradeDialog";
-// import { Error } from "@/components/ui/error";
 
 interface ContactTableProps {
 	contacts: Contact[];
@@ -29,10 +28,9 @@ export const ContactTable = ({ contacts }: ContactTableProps) => {
 			const fullContact = await fetchContactDetails(contact.id);
 			if (fullContact) {
 				setSelectedContact(fullContact);
-				incrementViews(); // Update the badge immediately
+				incrementViews();
 			}
 		} catch (err: any) {
-			// Show upgrade dialog when daily limit is exceeded
 			if (err.message === "Daily limit exceeded") {
 				setShowUpgradeDialog(true);
 			} else {

@@ -6,9 +6,6 @@ import { auth } from "@clerk/nextjs/server";
 
 export async function fetchContactDetails(contactId: string): Promise<Contact | null> {
 	const { userId } = await auth();
-	// const userId = "clerk_user_id_example"; // TODO: replace with actual user ID from auth
-
-	console.log("Fetching contact details for user ||||||||||||||||||||||||||| :", userId);
 
 	if (!userId) {
 		throw new Error("Unauthorized");
@@ -19,29 +16,41 @@ export async function fetchContactDetails(contactId: string): Promise<Contact | 
 
 	const today = new Date().toISOString().slice(0, 10);
 
-	// get user's viewed count
-	const userView = await db
-		.collection("user_views")
-		.findOne({ userId, date: today });
+	// find user record
+	const user = await db.collection("users").findOne({ userId });
 
-	const viewedCount = userView?.viewedCount ?? 0;
+	// ❌ user does not exist in DB → block access
+	if (!user) {
+		throw new Error("User not found in database");
+	}
 
-	if (viewedCount >= 50) {
+	// current count for today
+	const todayViews = user.dailyViews?.[today] ?? 0;
+
+	if (todayViews >= 50) {
 		throw new Error("Daily limit exceeded");
 	}
 
-	// get the contact
-	const contact = await db.collection("contacts_contact_rows")
-		.findOne({ id: contactId }, { projection: { _id: 0 } }) as unknown as Contact | null;
+	// fetch contact details (full details)
+	const contact = await db
+		.collection("contacts_contact_rows")
+		.findOne(
+			{ id: contactId },
+			{ projection: { _id: 0 } }
+		) as Contact | null;
 
-	if (!contact) return null;
+	if (!contact) {
+		return null;
+	}
 
-	// increase their count
-	await db.collection("user_views").updateOne(
-		{ userId, date: today },
-		{ $inc: { viewedCount: 1 } },
-		{ upsert: true }
+	// increment that user's count for today
+	await db.collection("users").updateOne(
+		{ userId },
+		{
+			$inc: { [`dailyViews.${today}`]: 1 },
+			$set: { updatedAt: new Date() }
+		}
 	);
 
-	return { ...contact };
+	return contact;
 }

@@ -32,10 +32,11 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 	const today = new Date().toISOString().slice(0, 10);
 
 	const [viewdTodayData, total, data] = await Promise.all([
-		db.collection("user_views").findOne({ userId: userId, date: today }, { projection: { viewedCount: 1, _id: 0 } }),
-		db.collection("contacts_contact_rows").countDocuments(filter),
-		db
-			.collection("contacts_contact_rows")
+		db.collection("user_views")
+			.findOne({ userId, date: today }, { projection: { viewedCount: 1, _id: 0 } }),
+		db.collection("contacts_contact_rows")
+			.countDocuments(filter),
+		db.collection("contacts_contact_rows")
 			.find(filter)
 			.project({ id: 1, first_name: 1, last_name: 1, title: 1, department: 1, _id: 0 })
 			.sort({ first_name: 1, last_name: 1 })

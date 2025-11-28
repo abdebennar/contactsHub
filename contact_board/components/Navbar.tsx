@@ -9,8 +9,6 @@ import { usePathname } from "next/navigation";
 export function Navbar() {
 	const pathname = usePathname();
 
-
-	// Hide navbar on home, sign-in, and sign-up pages
 	if (pathname === "/" || pathname === "/sign-in" || pathname === "/sign-up") return null;
 
 	return (

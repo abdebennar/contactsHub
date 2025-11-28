@@ -24,24 +24,3 @@ export const ViewsTodayBadge = ({ viewsLimit }: ViewsTodayBadgeProps) => {
 		</Badge>
 	);
 };
-
-
-// "use client";
-
-// import { useViews } from "@/components/ViewsProvider";
-
-// interface ViewsTodayBadgeProps {
-// 	viewsLimit: number;
-// }
-
-// export function ViewsTodayBadge({ viewsLimit }: ViewsTodayBadgeProps) {
-// 	const { viewsToday } = useViews();
-
-// 	return (
-// 		<div className="flex items-center gap-2 px-3 py-1 bg-secondary rounded-md">
-// 			<span className="text-sm font-medium">
-// 				Views Today: {viewsToday} / {viewsLimit}
-// 			</span>
-// 		</div>
-// 	);
-// }
