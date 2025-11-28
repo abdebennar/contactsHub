@@ -1,7 +1,4 @@
 import { MongoClient } from "mongodb";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 if (!process.env.MONGO_URI) throw new Error("❌ MONGO_URI not defined");
 
@@ -29,7 +26,6 @@ async function connectClient() {
 		const client = new MongoClient(uri, options);
 		await client.connect();
 
-		console.log("✅ MongoDB Connected");
 		global._mongoConnected = true;
 
 		return client;

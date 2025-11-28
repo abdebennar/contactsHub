@@ -24,10 +24,6 @@ export default clerkMiddleware(async (auth, req) => {
 	return;
 });
 
-// export const config = {
-// 	matcher: ["/((?!signin|signup|_next|api).*)"]
-// };
-
 
 export const config = {
 	matcher: [

@@ -60,7 +60,6 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 						</h1>
 
 
-						{/* TODO day view limit is here  */}
 						<ViewsTodayBadge viewsLimit={50} />
 					</div>
 
@@ -69,7 +68,7 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 							Browse {total.toLocaleString()} government agency contacts
 						</p>
 						<p className="text-sm">
-							Showing {contacts.length} of {total.toLocaleString()} contacts
+							Showing {contacts.length * page} of {total.toLocaleString()} contacts
 						</p>
 					</div>
 				</div>

@@ -1,10 +1,7 @@
 import { Building2 } from "lucide-react";
 import { Filter } from "mongodb";
 import { AgencyTable } from "@/components/AgencyTable";
-// import { SkeletonTable } from "@/components/SkeletonTable";
 import { ClientPagination } from "@/components/ClientPagination";
-// import { SearchInput } from "@/components/SearchInput";
-// import { SelectStateFilter } from "@/components/SelectStateFilter";
 import clientPromise from "@/lib/mongo";
 import { Agency } from "@/types";
 
@@ -26,8 +23,8 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 	const offset = (page - 1) * limit;
 
 
-	// TODO  use filter and search or not 
-	// Fetch data directly from MongoDB
+
+
 	const client = await clientPromise;
 	const db = client.db();
 
@@ -56,9 +53,7 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 			.toArray()
 	]);
 
-	const agencies: Agency[] = data as unknown as Agency[];
-
-
+	const agencies: Agency[] = data as Agency[];
 	const totalPages = Math.ceil(total / limit);
 
 	return (
@@ -73,20 +68,11 @@ export default async function AgenciesPage({ searchParams }: PageProps) {
 						Browse {total.toLocaleString()} government agencies and their contacts
 					</p>
 					<p className="text-sm">
-						Showing {agencies.length} of {total.toLocaleString()} agencies
+						Showing {agencies.length * page} of {total.toLocaleString()} agencies
 					</p>
 				</div>
 
 			</div>
-
-			{/* Search + State Filter */}
-			{/* <div className="flex flex-col sm:flex-row gap-4"> */}
-			{/* <SearchInput defaultValue={search} placeholder="Search agencies..." /> */}
-			{/* <SelectStateFilter defaultValue={state} /> */}
-			{/* </div> */}
-
-			{/* Results count */}
-
 
 			{agencies.length === 0 ? (
 				<div className="text-center py-12 border rounded-lg">

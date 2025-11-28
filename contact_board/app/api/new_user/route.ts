@@ -2,6 +2,9 @@ import { verifyWebhook } from '@clerk/nextjs/webhooks'
 import { NextRequest } from 'next/server'
 import clientPromise from "@/lib/mongo";
 
+
+
+
 interface UserCreatedData {
 	id: string;
 	email_addresses: { email_address: string }[];

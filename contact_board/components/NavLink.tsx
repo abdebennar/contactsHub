@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -8,10 +9,8 @@ export function NavLinks() {
 
 	const linkStyle = (path: string) =>
 		pathname.startsWith(path)
-			? "font-semibold text-sm transition-colors text-[#5184EE]"
-			: "text-muted-foreground text-sm hover:text-[#5184EE]"
-
-
+			? "font-semibold text-base text-[#5184EE] border-b-2 border-[#5184EE] pb-1"
+			: "text-gray-700 text-base hover:text-[#5184EE] hover:border-b-2  border-b-2 border-transparent pb-1 transition-all cursor-pointer"
 
 	return (
 		<div className="flex items-center gap-7">

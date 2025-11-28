@@ -42,7 +42,8 @@ export async function fetchContactDetails(contactId: string): Promise<Contact | 
 		{ userId },
 		{
 			$inc: { [`dailyViews.${today}`]: 1 },
-			$set: { updatedAt: new Date() }
+			$set: { updatedAt: new Date() },
+			$setOnInsert: { createdAt: new Date() }
 		}
 	);
 

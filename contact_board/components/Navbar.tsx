@@ -6,15 +6,18 @@ import Link from "next/link";
 import { Home } from "lucide-react";
 import { usePathname } from "next/navigation";
 
+
 export function Navbar() {
 	const pathname = usePathname();
 
-	if (pathname === "/" || pathname === "/sign-in" || pathname === "/sign-up") return null;
+	if (!pathname.startsWith("/agencies") && !pathname.startsWith("/contacts")) {
+		return null;
+	}
 
 	return (
 		<header className="fixed top-0 left-0 right-0 z-50 bg-background border-b">
 			<div className="flex justify-between items-center px-6 h-16">
-				<Link href="/" className="font-semibold text-lg hover:opacity-80 transition-opacity">
+				<Link href="/" className="font-semibold text-lg hover:opacity-80  hover:text-[#5184EE] transition-opacity">
 					<Home />
 				</Link>
 
