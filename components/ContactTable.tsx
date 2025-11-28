@@ -10,7 +10,6 @@ import { ContactDetailsDialog } from "@/components/ContactDetailsDialog";
 import { fetchContactDetails } from "@/actions/getConetentDetails";
 import { useViews } from "@/components/ViewsProvider";
 import { UpgradeDialog } from "@/components/UpgradeDialog";
-import { toast } from "sonner";
 
 interface ContactTableProps {
 	contacts: Contact[];
@@ -25,34 +24,25 @@ export const ContactTable = ({ contacts }: ContactTableProps) => {
 	const safe = (value?: string | null) => value?.trim() || "_";
 
 	const handleViewContact = async (contact: Contact) => {
-		try {
-			setLoadingContactId(contact.id);
-			const fullContact = await fetchContactDetails(contact.id);
+		setLoadingContactId(contact.id);
 
-			if (fullContact) {
-				setSelectedContact(fullContact);
-				incrementViews();
-			}
-		} catch (err: any) {
-			const message = err.message || "Something went wrong";
+		const result = await fetchContactDetails(contact.id);
 
-			if (message === "Daily limit exceeded") {
+		setLoadingContactId(null);
+
+		if (!result.success) {
+			// Handle different error messages
+			if (result.message === "Daily limit exceeded") {
 				setShowUpgradeDialog(true);
-			} else if (message === "Contact not found") {
-				alert("This contact no longer exists");
-			} else if (message.includes("sign in")) {
-				alert("Please sign in to view contact details");
 			} else {
-				toast.error(message, {
-					description: message === "Contact not found"
-						? "This contact may have been removed"
-						: undefined
-				});
+				alert(result.message);
 			}
-
-		} finally {
-			setLoadingContactId(null);
+			return;
 		}
+
+		// Success!
+		setSelectedContact(result.contact);
+		incrementViews();
 	};
 
 	return (

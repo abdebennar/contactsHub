@@ -64,9 +64,7 @@ export async function seedDatabase(db: Db) {
 		console.log("   ✓ Contacts collection already exists");
 	}
 
-	// 3. Ensure Users Collection Exists
 	const usersCol = db.collection("users");
-	// We don't seed users, but we ensure the index exists
 	await usersCol.createIndex({ userId: 1 }, { unique: true });
 	console.log("   ✓ Users collection configured");
 

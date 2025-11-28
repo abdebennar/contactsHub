@@ -4,12 +4,16 @@ import clientPromise from "@/lib/mongo";
 import { Contact } from "@/types";
 import { auth } from "@clerk/nextjs/server";
 
-export async function fetchContactDetails(contactId: string): Promise<Contact | null> {
+type FetchContactResult =
+	| { success: true; contact: Contact }
+	| { success: false; message: string };
+
+export async function fetchContactDetails(contactId: string): Promise<FetchContactResult> {
 	try {
 		const { userId } = await auth();
 
 		if (!userId) {
-			throw new Error("Please sign in to view contact details");
+			return { success: false, message: "Please sign in to view contact details" };
 		}
 
 		const client = await clientPromise;
@@ -30,7 +34,7 @@ export async function fetchContactDetails(contactId: string): Promise<Contact | 
 			const todayViews = user.dailyViews?.[today] ?? 0;
 
 			if (todayViews >= 50) {
-				throw new Error("Daily limit exceeded");
+				return { success: false, message: "Daily limit exceeded" };
 			}
 		}
 
@@ -42,7 +46,7 @@ export async function fetchContactDetails(contactId: string): Promise<Contact | 
 			) as Contact | null;
 
 		if (!contact) {
-			throw new Error("Contact not found");
+			return { success: false, message: "Contact not found" };
 		}
 
 		await db.collection("users").updateOne(
@@ -54,14 +58,10 @@ export async function fetchContactDetails(contactId: string): Promise<Contact | 
 			{ upsert: true }
 		);
 
-		return contact;
+		return { success: true, contact };
 
 	} catch (error) {
 		console.error('fetchContactDetails error:', error);
-
-		if (error instanceof Error) {
-			throw error;
-		}
-		throw new Error("Unable to load contact. Please try again.");
+		return { success: false, message: "Unable to load contact. Please try again." };
 	}
 }

@@ -32,8 +32,8 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 	const today = new Date().toISOString().slice(0, 10);
 
 	const [viewdTodayData, total, data] = await Promise.all([
-		db.collection("user_views")
-			.findOne({ userId, date: today }, { projection: { viewedCount: 1, _id: 0 } }),
+		db.collection("users")
+			.findOne({ userId }, { projection: { [`dailyViews.${today}`]: 1, _id: 0 } }),
 		db.collection("contacts_contact_rows")
 			.countDocuments(filter),
 		db.collection("contacts_contact_rows")
@@ -46,7 +46,7 @@ export default async function ContactsPage({ searchParams }: PageProps) {
 	]);
 
 	const contacts: Contact[] = data as unknown as Contact[];
-	const viewedToday = viewdTodayData?.viewedCount || 0;
+	const viewedToday = viewdTodayData?.dailyViews?.[today] ?? 0;
 	const totalPages = Math.ceil(total / limit);
 
 	return (
