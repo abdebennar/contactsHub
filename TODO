@@ -1,3 +1,3 @@
 // TODO: to handle the limit for each day, each day you create a new object for the client 
-		- so each day has its limit and its object 
+		- so each day has its limit and its object  
 // TODO: hook today viewd badge with the get contact component  so it keep updating 
