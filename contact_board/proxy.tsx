@@ -1,6 +1,7 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isPublicRoute = createRouteMatcher([
+	"/",
 	"/sign-in(.*)",
 	"/sign-up(.*)",
 	"/sso-callback(.*)",
@@ -11,21 +12,21 @@ export default clerkMiddleware(async (auth, req) => {
 	const { userId, redirectToSignIn } = await auth();
 	const path = req.nextUrl.pathname;
 
-	// --- ROOT ROUTE ---
 	if (path === "/") {
-		if (!userId) {
-			return redirectToSignIn({ returnBackUrl: req.url });
-		}
-		return Response.redirect(new URL("/agencies", req.url));
+		return;
 	}
 
-	// --- PROTECTED ROUTES ---
 	if (!isPublicRoute(req) && !userId) {
-		return redirectToSignIn({ returnBackUrl: req.url });
+		return redirectToSignIn({ returnBackUrl: "/sign-in" });
 	}
 
 	return;
 });
+
+// export const config = {
+// 	matcher: ["/((?!signin|signup|_next|api).*)"]
+// };
+
 
 export const config = {
 	matcher: [
