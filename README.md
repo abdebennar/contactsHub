@@ -37,28 +37,6 @@ Instead of traditional API routes, we use **Server Actions** (e.g., `actions/get
 
 The `lib/mongo.ts` file establishes a connection to MongoDB using Mongoose. Server Components and Server Actions use this to query collections like `agencies` and `contacts` directly.
 
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-- Node.js 18+
-- MongoDB instance (local or Atlas)
-- Clerk account
-
-### Installation
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/contactshub.git
-cd contactshub
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env.local
-```
 
 ### Environment Variables
 ```env
@@ -70,7 +48,7 @@ CLERK_SECRET_KEY=your_clerk_secret_key
 MONGODB_URI=your_mongodb_connection_string
 
 # App URL
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+CLERK_SECRET_KEY=your_clerk_secret_key
 ```
 
 ### Run Development Server
@@ -92,11 +70,3 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ✅ Optimized hybrid rendering
 
 ---
-
-## 📄 License
-
-MIT License - feel free to use this project for learning or production.
-
----
-
-**Built with ❤️ using Next.js and modern web standards.**
