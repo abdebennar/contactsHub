@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌐 ContactsHub
 
-## Getting Started
+A modern, full-stack contact and agency management platform built with Next.js 14+, leveraging Server Components, Server Actions, and seamless authentication.
 
-First, run the development server:
+---
 
+## 🛠 Tech Stack
+
+- **Framework**: Next.js 16 (App Router)
+- **Authentication**: Clerk
+- **Database**: MongoDB
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Deployment**: Vercel
+
+---
+
+## 🏗 How It Works
+
+![Architecture Diagram](./docs/arch.png)
+
+### 1️⃣ Authentication & Middleware (Clerk)
+
+The `middleware.ts` file acts as a gatekeeper. Before any page loads, it checks with Clerk to verify the user's session. If valid, the request proceeds to protected routes like `/agencies` and `/contacts`. If not, users are redirected to `/sign-in`. This happens at the edge—before your app even runs.
+
+### 2️⃣ Hybrid Rendering (Server Components + Client Hydration)
+
+Pages like `app/agencies/page.tsx` are **Server Components** that fetch data directly from MongoDB. They render HTML on the server and send it to the browser instantly. Then, Client Components like `AgencyTable.tsx` "wake up" (hydrate) in the browser to add interactivity—buttons, modals, and state management.
+
+**Result**: Fast initial load + rich interactivity.
+
+### 3️⃣ Server Actions & Data Flow
+
+Instead of traditional API routes, we use **Server Actions** (e.g., `actions/getConetentDetails.ts`). When a user clicks "View Details" in a Client Component, it calls a Server Action that runs securely on the server, queries the database, and returns data—all without exposing database credentials to the client.
+
+### 4️⃣ Database Layer (MongoDB)
+
+The `lib/mongo.ts` file establishes a connection to MongoDB using Mongoose. Server Components and Server Actions use this to query collections like `agencies` and `contacts` directly.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+
+- MongoDB instance (local or Atlas)
+- Clerk account
+
+### Installation
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone the repository
+git clone https://github.com/yourusername/contactshub.git
+cd contactshub
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Environment Variables
+```env
+# Clerk Authentication
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+CLERK_SECRET_KEY=your_clerk_secret_key
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# MongoDB
+MONGODB_URI=your_mongodb_connection_string
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+# App URL
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-## Learn More
+### Run Development Server
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🎯 Key Features
 
-## Deploy on Vercel
+✅ Secure authentication with Clerk  
+✅ Direct database queries from Server Components  
+✅ Interactive UI with Client Components  
+✅ Server Actions for secure data mutations  
+✅ TypeScript for type safety  
+✅ Optimized hybrid rendering
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 License
+
+MIT License - feel free to use this project for learning or production.
+
+---
+
+**Built with ❤️ using Next.js and modern web standards.**
