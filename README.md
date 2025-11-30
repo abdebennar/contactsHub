@@ -1,6 +1,6 @@
 # 🌐 ContactsHub
 
-A modern, full-stack contact and agency management platform built with Next.js 14+, leveraging Server Components, Server Actions, and seamless authentication.
+A modern, full-stack contact and agency management platform built with Next.js 16, leveraging Server Components, Server Actions, and seamless authentication.
 
 ---
 
